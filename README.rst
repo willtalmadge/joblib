@@ -1,7 +1,7 @@
 This fork of joblib was created to implemented support for immutable arrays.
-Immutable arrays only need to be hashed once, this allows them to be passed
-into lightweight functions without having to compute the hash of a large
-data set again.
+Immutable arrays only need to be hashed once. Functions in a data processing
+pipeline can than accept numpy arrays directly without having to consider
+cost of hashing the entire array again.
 
 |PyPi| |Travis| |AppVeyor| |Codecov|
 
