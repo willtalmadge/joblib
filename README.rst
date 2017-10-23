@@ -1,3 +1,8 @@
+This fork of joblib was created to implemented support for immutable arrays.
+Immutable arrays only need to be hashed once, this allows them to be passed
+into lightweight functions without having to compute the hash of a large
+data set again.
+
 |PyPi| |Travis| |AppVeyor| |Codecov|
 
 .. |Travis| image:: https://travis-ci.org/joblib/joblib.svg?branch=master
