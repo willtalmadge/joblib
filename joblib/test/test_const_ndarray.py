@@ -1,10 +1,7 @@
-from unittest.mock import PropertyMock
-
 from joblib.hashing import NumpyHasher
 from joblib.memory import Memory
 import numpy as np
 from joblib.const_ndarray import const_ndarray
-from pytest_mock import mocker
 import pytest
 
 
@@ -17,13 +14,20 @@ def test_const_ndarray_init_from_mutable():
     assert np.all(arr == const_ndarray(arr))
 
 
-def test_const_ndarray_is_immutable(mocker):
+def test_const_ndarray_is_immutable():
     arr = const_ndarray(np.array([0, 1, 2]))
     with pytest.raises(ValueError):
         arr[0] = 1
 
 
-def test_hash_called_once(mocker, tmpdir):
+def test_const_ndarray_has_hash():
+    arr = np.array([0, 1, 2])
+    arr = const_ndarray(arr)
+
+    assert arr.joblib_hash is not None
+
+
+def test_getbuffer_not_called_on_const_ndarray_in_hash(mocker):
     arr = np.array([0, 1, 2])
     arr = const_ndarray(arr)
 
