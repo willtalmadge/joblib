@@ -3,5 +3,6 @@ wheel
 pytest
 pytest-cov
 pytest-timeout
+pytest-mock
 codecov
 
