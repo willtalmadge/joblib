@@ -190,9 +190,9 @@ class NumpyHasher(Hasher):
             the Pickler class.
         """
         if isinstance(obj, self.np.ndarray) and not obj.dtype.hasobject:
-            if isinstance(obj, self.const_ndarray):
-                self._hash.update(obj.joblib_hash)
-            else:
+            try:
+                self._hash.update(obj.joblib_hash.encode())
+            except AttributeError:
                 # Compute a hash of the object The update function of the
                 # hash requires a c_contiguous buffer.
                 if obj.shape == ():
