@@ -54,6 +54,5 @@ if __name__ == '__main__':
                                         'data/*.npy.z']},
           packages=['joblib', 'joblib.test', 'joblib.test.data',
                     'joblib.externals', 'joblib.externals.cloudpickle',
-                    'joblib.externals.loky', 'joblib.externals.loky.backend',
-                    'joblib.const_ndarray'],
+                    'joblib.externals.loky', 'joblib.externals.loky.backend'],
           **extra_setuptools_args)
