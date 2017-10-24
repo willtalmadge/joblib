@@ -445,6 +445,8 @@ class MemorizedFunc(Logger):
             timestamp: float, optional
                 The reference time from which times in tracing messages
                 are reported.
+            immutable: If True then numpy arrays are replaced with
+
         """
         Logger.__init__(self)
         self.mmap_mode = mmap_mode

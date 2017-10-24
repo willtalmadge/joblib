@@ -175,8 +175,10 @@ class NumpyHasher(Hasher):
         self.coerce_mmap = coerce_mmap
         Hasher.__init__(self, hash_name=hash_name)
         # delayed import of numpy, to avoid tight coupling
+        from .const_ndarray import const_ndarray
         import numpy as np
         self.np = np
+        self.const_ndarray = const_ndarray
         if hasattr(np, 'getbuffer'):
             self._getbuffer = np.getbuffer
         else:
@@ -188,28 +190,31 @@ class NumpyHasher(Hasher):
             the Pickler class.
         """
         if isinstance(obj, self.np.ndarray) and not obj.dtype.hasobject:
-            # Compute a hash of the object
-            # The update function of the hash requires a c_contiguous buffer.
-            if obj.shape == ():
-                # 0d arrays need to be flattened because viewing them as bytes
-                # raises a ValueError exception.
-                obj_c_contiguous = obj.flatten()
-            elif obj.flags.c_contiguous:
-                obj_c_contiguous = obj
-            elif obj.flags.f_contiguous:
-                obj_c_contiguous = obj.T
+            if isinstance(obj, self.const_ndarray):
+                self._hash.update(obj.joblib_hash)
             else:
-                # Cater for non-single-segment arrays: this creates a
-                # copy, and thus aleviates this issue.
-                # XXX: There might be a more efficient way of doing this
-                obj_c_contiguous = obj.flatten()
+                # Compute a hash of the object The update function of the
+                # hash requires a c_contiguous buffer.
+                if obj.shape == ():
+                    # 0d arrays need to be flattened because viewing them as
+                    # bytes raises a ValueError exception.
+                    obj_c_contiguous = obj.flatten()
+                elif obj.flags.c_contiguous:
+                    obj_c_contiguous = obj
+                elif obj.flags.f_contiguous:
+                    obj_c_contiguous = obj.T
+                else:
+                    # Cater for non-single-segment arrays: this creates a
+                    # copy, and thus aleviates this issue.
+                    # XXX: There might be a more efficient way of doing this
+                    obj_c_contiguous = obj.flatten()
 
-            # memoryview is not supported for some dtypes, e.g. datetime64, see
-            # https://github.com/numpy/numpy/issues/4983. The
-            # workaround is to view the array as bytes before
-            # taking the memoryview.
-            self._hash.update(
-                self._getbuffer(obj_c_contiguous.view(self.np.uint8)))
+                # memoryview is not supported for some dtypes, e.g.
+                # datetime64, see https://github.com/numpy/numpy/issues/4983.
+                # The workaround is to view the array as bytes before taking
+                # the memoryview.
+                self._hash.update(
+                    self._getbuffer(obj_c_contiguous.view(self.np.uint8)))
 
             # We store the class, to be able to distinguish between
             # Objects with the same binary content, but different
