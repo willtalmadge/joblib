@@ -4,6 +4,7 @@ import numpy as np
 from joblib.const_ndarray import const_ndarray
 import pytest
 
+
 def f(x):
     return 2 * x
 
