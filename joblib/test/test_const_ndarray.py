@@ -3,7 +3,6 @@ from joblib.memory import Memory
 import numpy as np
 from joblib.const_ndarray import const_ndarray
 import pytest
-from pytest_mock import mocker
 
 def f(x):
     return 2 * x
